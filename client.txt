@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resto Anarus</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-4">Menu Resto Anarus</h1>
+    <ul id="menu-list" class="space-y-4">
+      <!-- Menu items will be appended here -->
+    </ul>
+  </div>
+
+  <script>
+    async function fetchMenu() {
+      try {
+        const response = await fetch('http://localhost:3000/menu');
+        const menu = await response.json();
+
+        const menuList = document.getElementById('menu-list');
+        menuList.innerHTML = ''; // Clear previous content
+
+        menu.forEach(item => {
+          const listItem = document.createElement('li');
+          listItem.className = 'bg-white shadow-md rounded-lg p-4';
+
+          listItem.innerHTML = `
+            <h2 class="text-xl font-bold">${item.name}</h2>
+            <p class="text-gray-700">${item.description}</p>
+            <p class="text-green-600 font-semibold">${item.price} IDR</p>
+          `;
+
+          menuList.appendChild(listItem);
+        });
+      } catch (error) {
+        console.error('Error fetching menu:', error);
+      }
+    }
+
+    // Fetch menu on page load
+    fetchMenu();
+  </script>
+</body>
+</html>

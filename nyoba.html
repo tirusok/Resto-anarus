@@ -1,0 +1,132 @@
+<template>
+  <div class="p-6">
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <h2 class="text-xl font-semibold mb-4">Checkout Form</h2>
+
+      <div class="mb-4">
+        <label for="buyerName" class="block text-sm font-medium">Nama Pembeli:</label>
+        <input id="buyerName" v-model="buyerName" type="text" class="border rounded p-2 w-full" />
+      </div>
+
+      <div class="mb-4">
+        <label for="address" class="block text-sm font-medium">Alamat:</label>
+        <input id="address" v-model="address" type="text" class="border rounded p-2 w-full" />
+      </div>
+
+      <div class="mb-4">
+        <label for="paymentMethod" class="block text-sm font-medium">Metode Pembayaran:</label>
+        <select id="paymentMethod" v-model="paymentMethod" class="border rounded p-2 w-full">
+          <option>Transfer Bank</option>
+          <option>COD</option>
+          <option>Dompet Digital</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium">Keranjang:</label>
+        <ul class="list-disc ml-6">
+          <li v-for="(item, index) in cart" :key="index">
+            {{ item.quantity }} x {{ item.name }} - Rp {{ item.totalPrice }}
+          </li>
+        </ul>
+      </div>
+
+      <div class="mb-4">
+        <strong>Total: Rp {{ total }}</strong>
+      </div>
+
+      <button @click="checkout" class="bg-blue-500 text-white px-4 py-2 rounded">Checkout</button>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-lg p-6 mt-6">
+      <h2 class="text-xl font-semibold mb-4">Rekap Data Checkout</h2>
+      <table class="table-auto w-full border-collapse border border-gray-300">
+        <thead>
+          <tr class="bg-gray-200">
+            <th class="border border-gray-300 p-2">No</th>
+            <th class="border border-gray-300 p-2">Nama Pembeli</th>
+            <th class="border border-gray-300 p-2">Alamat</th>
+            <th class="border border-gray-300 p-2">Metode Pembayaran</th>
+            <th class="border border-gray-300 p-2">Total</th>
+            <th class="border border-gray-300 p-2">Detail Item</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(data, index) in rekapData" :key="index">
+            <td class="border border-gray-300 p-2 text-center">{{ index + 1 }}</td>
+            <td class="border border-gray-300 p-2">{{ data.buyerName }}</td>
+            <td class="border border-gray-300 p-2">{{ data.address }}</td>
+            <td class="border border-gray-300 p-2">{{ data.paymentMethod }}</td>
+            <td class="border border-gray-300 p-2">Rp {{ data.total }}</td>
+            <td class="border border-gray-300 p-2">
+              <ul>
+                <li v-for="item in data.items" :key="item.name">
+                  {{ item.quantity }} x {{ item.name }} - Rp {{ item.totalPrice }}
+                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref, computed } from 'vue';
+
+export default {
+  setup() {
+    const buyerName = ref('');
+    const address = ref('');
+    const paymentMethod = ref('Transfer Bank');
+    const cart = ref([
+      { name: 'Mie Ayam Spesial', quantity: 2, totalPrice: 40000 },
+      { name: 'Nasi Goreng', quantity: 1, totalPrice: 25000 },
+    ]);
+
+    const total = computed(() => {
+      return cart.value.reduce((sum, item) => sum + item.totalPrice, 0);
+    });
+
+    const rekapData = ref([]);
+
+    const checkout = () => {
+      if (!buyerName.value || !address.value) {
+        alert('Alamat dan Nama Pembeli harus diisi!');
+        return;
+      }
+
+      rekapData.value.push({
+        buyerName: buyerName.value,
+        address: address.value,
+        paymentMethod: paymentMethod.value,
+        items: [...cart.value],
+        total: total.value,
+      });
+
+      // Reset form dan keranjang
+      buyerName.value = '';
+      address.value = '';
+      paymentMethod.value = 'Transfer Bank';
+      cart.value = [];
+    };
+
+    return {
+      buyerName,
+      address,
+      paymentMethod,
+      cart,
+      total,
+      rekapData,
+      checkout,
+    };
+  },
+};
+</script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+}
+</style>
